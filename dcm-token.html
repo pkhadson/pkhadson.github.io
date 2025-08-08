@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>DCM Token Decryptor - Celcoin</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				background: #7664fa;
+				color: #fff;
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.bg-image {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-image: url("https://www.celcoin.com.br/wp-content/uploads/2025/01/bg-3d-Celcoin.png");
+				background-size: cover;
+				background-position: center;
+				opacity: 0.1;
+				z-index: 1;
+			}
+
+			.container {
+				position: relative;
+				z-index: 2;
+				background: rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(10px);
+				border-radius: 20px;
+				padding: 40px;
+				width: 90%;
+				max-width: 500px;
+				box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+				border: 1px solid rgba(255, 255, 255, 0.2);
+			}
+
+			.logo {
+				text-align: center;
+				margin-bottom: 30px;
+			}
+
+			.logo img {
+				height: 60px;
+				filter: brightness(0) invert(1);
+			}
+
+			.title {
+				text-align: center;
+				font-size: 28px;
+				font-weight: 600;
+				margin-bottom: 10px;
+			}
+
+			.subtitle {
+				text-align: center;
+				font-size: 16px;
+				opacity: 0.9;
+				margin-bottom: 40px;
+			}
+
+			.form-group {
+				margin-bottom: 25px;
+			}
+
+			.form-group label {
+				display: block;
+				margin-bottom: 8px;
+				font-weight: 500;
+				font-size: 14px;
+			}
+
+			.form-group input,
+			.form-group textarea {
+				width: 100%;
+				padding: 15px;
+				border: none;
+				border-radius: 10px;
+				background: rgba(255, 255, 255, 0.2);
+				color: #fff;
+				font-size: 14px;
+				transition: all 0.3s ease;
+			}
+
+			.form-group input::placeholder,
+			.form-group textarea::placeholder {
+				color: rgba(255, 255, 255, 0.7);
+			}
+
+			.form-group input:focus,
+			.form-group textarea:focus {
+				outline: none;
+				background: rgba(255, 255, 255, 0.3);
+				box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+			}
+
+			.form-group textarea {
+				resize: vertical;
+				min-height: 100px;
+				font-family: "Courier New", monospace;
+			}
+
+			.btn {
+				width: 100%;
+				padding: 15px;
+				background: rgba(255, 255, 255, 0.2);
+				border: 2px solid rgba(255, 255, 255, 0.3);
+				color: #fff;
+				border-radius: 10px;
+				font-size: 16px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				margin-bottom: 20px;
+			}
+
+			.btn:hover {
+				background: rgba(255, 255, 255, 0.3);
+				border-color: rgba(255, 255, 255, 0.5);
+				transform: translateY(-2px);
+			}
+
+			.btn:active {
+				transform: translateY(0);
+			}
+
+			.result {
+				margin-top: 20px;
+				padding: 20px;
+				background: rgba(255, 255, 255, 0.1);
+				border-radius: 10px;
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				display: none;
+			}
+
+			.result.show {
+				display: block;
+			}
+
+			.result h3 {
+				margin-bottom: 10px;
+				font-size: 16px;
+			}
+
+			.result-content {
+				font-family: "Courier New", monospace;
+				font-size: 12px;
+				word-break: break-all;
+				line-height: 1.4;
+			}
+
+			.error {
+				background: rgba(255, 100, 100, 0.2);
+				border-color: rgba(255, 100, 100, 0.5);
+			}
+
+			.success {
+				background: rgba(100, 255, 100, 0.2);
+				border-color: rgba(100, 255, 100, 0.5);
+			}
+
+			.loading {
+				opacity: 0.7;
+				pointer-events: none;
+			}
+
+			@media (max-width: 600px) {
+				.container {
+					padding: 30px 20px;
+					margin: 20px;
+				}
+
+				.title {
+					font-size: 24px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="bg-image"></div>
+
+		<div class="container">
+			<div class="logo">
+				<img
+					src="https://www.celcoin.com.br/wp-content/uploads/2024/10/Logo-white-celcoin.svg"
+					alt="Celcoin Logo"
+				/>
+			</div>
+
+			<h1 class="title">DCM Token Decryptor</h1>
+			<p class="subtitle">
+				Descriptografe seus tokens DCM de forma segura e rápida
+			</p>
+
+			<form id="decryptForm">
+				<div class="form-group">
+					<label for="encryptedToken">Token Criptografado</label>
+					<textarea
+						id="encryptedToken"
+						placeholder="Cole aqui o token criptografado..."
+						required
+					></textarea>
+				</div>
+
+				<div class="form-group">
+					<label for="password">Senha</label>
+					<input
+						type="password"
+						id="password"
+						placeholder="Digite a senha de descriptografia..."
+						required
+					/>
+				</div>
+
+				<button type="submit" class="btn" id="decryptBtn">
+					Descriptografar Token
+				</button>
+			</form>
+
+			<div class="result" id="result">
+				<h3>Token Descriptografado:</h3>
+				<div class="result-content" id="resultContent"></div>
+			</div>
+		</div>
+
+        <script src="https://cdn.jsdelivr.net/npm/scrypt-async@2.0.1/scrypt-async.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+		<script>
+			class DCMTokenDecryptor {
+				constructor() {
+					this.form = document.getElementById("decryptForm");
+					this.encryptedTokenInput = document.getElementById("encryptedToken");
+					this.passwordInput = document.getElementById("password");
+					this.decryptBtn = document.getElementById("decryptBtn");
+					this.result = document.getElementById("result");
+					this.resultContent = document.getElementById("resultContent");
+
+					this.loadSavedPassword();
+					this.bindEvents();
+				}
+
+				bindEvents() {
+					this.form.addEventListener("submit", (e) => {
+						e.preventDefault();
+						this.decryptToken();
+					});
+
+					this.passwordInput.addEventListener("input", () => {
+						this.savePassword();
+					});
+				}
+
+				loadSavedPassword() {
+					const savedPassword = localStorage.getItem("dcm_decryptor_password");
+					if (savedPassword) {
+						this.passwordInput.value = savedPassword;
+					}
+				}
+
+				savePassword() {
+					localStorage.setItem(
+						"dcm_decryptor_password",
+						this.passwordInput.value
+					);
+				}
+
+				async decryptToken() {
+    const encryptedData = this.encryptedTokenInput.value.trim();
+    const password = this.passwordInput.value.trim();
+
+    if (!encryptedData || !password) {
+        this.showError('Por favor, preencha todos os campos.');
+        return;
+    }
+
+    this.setLoading(true);
+
+    try {
+        const decryptedToken = await this.decryptDcmToken(encryptedData, password);
+        this.showSuccess(decryptedToken);
+    } catch (error) {
+        this.showError(`Erro ao descriptografar: ${error.message}`);
+    } finally {
+        this.setLoading(false);
+    }
+}
+
+
+decryptDcmToken(encryptedData, password) {
+    return new Promise((resolve, reject) => {
+        const parts = encryptedData.split(":");
+        if (parts.length !== 2) {
+            reject(new Error("Formato de token inválido"));
+            return;
+        }
+
+        const encryptedTokenHex = parts[1];
+        const salt = "dcm-salt";
+
+        const hexToUint8 = (hex) => {
+            if (!hex || hex.length % 2 !== 0) return new Uint8Array();
+            const out = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < out.length; i++) {
+                out[i] = parseInt(hex.substr(i * 2, 2), 16);
+            }
+            return out;
+        };
+
+        const uint8ToWordArray = (u8) => CryptoJS.lib.WordArray.create(u8);
+
+        const evpBytesToKey = (passwordBytes, keyLen, ivLen) => {
+            const totalLen = keyLen + ivLen;
+            let derived = new Uint8Array(0);
+            let block = new Uint8Array(0);
+            while (derived.length < totalLen) {
+                const data = new Uint8Array(block.length + passwordBytes.length);
+                data.set(block, 0);
+                data.set(passwordBytes, block.length);
+                const hash = CryptoJS.MD5(CryptoJS.lib.WordArray.create(data));
+                const hashHex = CryptoJS.enc.Hex.stringify(hash);
+                block = hexToUint8(hashHex);
+                const next = new Uint8Array(derived.length + block.length);
+                next.set(derived, 0);
+                next.set(block, derived.length);
+                derived = next;
+            }
+            return {
+                key: derived.slice(0, keyLen),
+                iv: derived.slice(keyLen, totalLen)
+            };
+        };
+
+        scrypt(password, salt, {
+            N: 16384,
+            r: 8,
+            p: 1,
+            dkLen: 32,
+            encoding: "hex"
+        }, (derivedKeyHex) => {
+            try {
+                const passwordBytes = hexToUint8(derivedKeyHex);
+                const { key, iv } = evpBytesToKey(passwordBytes, 32, 16);
+
+                const keyWA = uint8ToWordArray(key);
+                const ivWA = uint8ToWordArray(iv);
+                const ciphertextWA = CryptoJS.enc.Hex.parse(encryptedTokenHex);
+
+                const decrypted = CryptoJS.AES.decrypt(
+                    { ciphertext: ciphertextWA },
+                    keyWA,
+                    {
+                        iv: ivWA,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    }
+                );
+
+                const decryptedToken = decrypted.toString(CryptoJS.enc.Utf8);
+                if (!decryptedToken) {
+                    throw new Error("Senha incorreta ou token inválido");
+                }
+                resolve(decryptedToken);
+            } catch (error) {
+                reject(new Error(`Falha na descriptografia: ${error.message}`));
+            }
+        });
+    });
+}
+
+
+				showSuccess(content) {
+					this.result.className = "result show success";
+					this.resultContent.textContent = content;
+					this.result.scrollIntoView({ behavior: "smooth" });
+				}
+
+				showError(message) {
+					this.result.className = "result show error";
+					this.resultContent.textContent = message;
+					this.result.scrollIntoView({ behavior: "smooth" });
+				}
+
+				setLoading(loading) {
+					if (loading) {
+						this.decryptBtn.textContent = "Descriptografando...";
+						this.decryptBtn.classList.add("loading");
+					} else {
+						this.decryptBtn.textContent = "Descriptografar Token";
+						this.decryptBtn.classList.remove("loading");
+					}
+				}
+			}
+
+			document.addEventListener("DOMContentLoaded", () => {
+				new DCMTokenDecryptor();
+			});
+		</script>
+	</body>
+</html>
